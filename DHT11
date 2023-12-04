@@ -1,0 +1,50 @@
+#include "DHT.h"
+
+#define DHTPIN  4
+#define DHTTYPE DHT11
+
+#define Switch_1_PIN   13
+#define Switch_2_PIN   12
+
+DHT dht11(DHTPIN, DHTTYPE);
+
+void setup() {
+  // put your setup code here, to run once:
+
+  Serial.begin(115200);
+  Serial.println();
+
+  pinMode(Switch_1_PIN, INPUT_PULLUP);
+  pinMode(Switch_2_PIN, INPUT_PULLUP);
+  
+  Serial.println(F("Switches and DHT11 test!"));
+
+  dht11.begin();
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  delay(2000);
+
+  // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  int h = dht11.readHumidity();
+  // Read temperature as Celsius (the default)
+  float t = dht11.readTemperature();
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+  Serial.print(F("Humidity : "));
+  Serial.print(h);
+  Serial.print(F("% | Temperature : "));
+  Serial.print(t);
+  Serial.print(F("°C | Switch 1 : "));
+  Serial.print(digitalRead(Switch_1_PIN));
+  Serial.print(F(" | Switch 2 : "));
+  Serial.println(digitalRead(Switch_2_PIN));
+}
