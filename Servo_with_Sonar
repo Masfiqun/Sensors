@@ -1,0 +1,62 @@
+#include <Servo.h>
+
+const int servoPin = 3;        // Servo control pin
+const int trigPin = A1;        // Trigger pin of the sonar sensor
+const int echoPin = A0;        // Echo pin of the sonar sensor
+const int servoPow = 2;        // Power pin for the servo
+const int obstacleThreshold = 100;  // Threshold distance for obstacle detection (in centimeters)
+
+Servo Servo1;
+
+int servoAngle = 180;          // Initial angle for the servo
+int targetAngle = 0;           // Target angle for gradual movement
+int speed = 30;                 // Speed of servo movement
+
+void setup() {
+  Serial.begin(9600);
+  Servo1.attach(servoPin);
+  pinMode(servoPow, OUTPUT);
+  digitalWrite(servoPow, HIGH);
+
+  // Set the initial position of the servo
+  Servo1.write(servoAngle);
+
+  pinMode(trigPin, OUTPUT);    // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT);     // Sets the echoPin as an Input
+}
+
+void loop() {
+  Serial.println("Loop Started");
+
+  gradualMoveServo(targetAngle);
+  delay(2000);
+
+  // Read sonar sensor
+  long duration, distance;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+}
+
+void gradualMoveServo(int target) {
+  int current = Servo1.read();
+  
+  
+    if (current < target) {
+      current += speed;
+    } else {
+      current -= speed;
+    
+    
+    Servo1.write(current);
+    delay(15);  // Adjust the delay to control the speed
+  }
+}
